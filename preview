@@ -984,7 +984,7 @@ extract_to_folder() {
         *.rar)
             { check_command unrar unrar && unrar x -inul "$file" "$folder_name/"; } || 
             { check_command 7z 7zip && 7z x "$file" -o"$folder_name"; } ;;
-        *.7z|*.7za|*.7zz|*.7zr|*.dmg)
+        *.7z|*.7za|*.7zz|*.7zr|*.dmg|*.cbz|*.cbr)
             check_command 7z 7zip && 7z x "$file" -o"$folder_name" ;;
         *.iso)
             check_command 7z 7zip && 7z x "$file" -o"$folder_name" ;;
@@ -1277,8 +1277,10 @@ imgview() {
 	local sixel_thumb_size="${PREVIEW_THUMB_SIXEL_W:-300}x${PREVIEW_THUMB_SIXEL_H:-200}!"
     
     [[ "$thumbnail" =~ ^-?[0-9]+$ ]] && {
+		{ [[ ${XDG_SESSION_TYPE,,} == tty ]] && cmd_check idump idump && cmd_check magick imagemagick &&
+		magick -quiet -- "${file}" -auto-orient -resize "${sixel_thumb_size}" jpg:- 2>/dev/null | idump -f 2>/dev/null && return 0; } ||
 		{ [[ -z "$TERMUX_VERSION" ]] && [[ -z "$XTERM_VERSION" ]] && [[ -z "$PREVIEW_IMG" || "$PREVIEW_IMG" == 1 ]] && cmd_check magick imagemagick &&
-		magick -quiet "${file}" -auto-orient -resize "$sixel_thumb_size" -colors "$numcolors" sixel:- 2>/dev/null && return 0; } ||
+		magick -quiet -- "${file}" -auto-orient -resize "${sixel_thumb_size}" -colors "$numcolors" sixel:- 2>/dev/null && return 0; } ||
         { [[ -z "$TERMUX_VERSION" ]] && [[ -z "$XTERM_VERSION" ]] && [[ -z "$PREVIEW_IMG" || "$PREVIEW_IMG" == 1 ]] && cmd_check img2sixel libsixel && 
         img2sixel -w "${PREVIEW_THUMB_SIXEL_W:-300}" -h "${PREVIEW_THUMB_SIXEL_H:-200}" "${file}" 2>/dev/null && return 0; } ||
         { [[ -z "$PREVIEW_IMG" || "$PREVIEW_IMG" == 2 ]] && cmd_check viu viu &&
@@ -1289,8 +1291,10 @@ imgview() {
         chafa -s "${PREVIEW_THUMB_CHAFA_S:-25}" "${file}" 2>/dev/null && return 0; }
     }
     [[ -z "$thumbnail" ]] && {
+		{ [[ ${XDG_SESSION_TYPE,,} == tty ]] && cmd_check idump idump && cmd_check magick imagemagick &&
+		magick -quiet -- "${file}" -auto-orient -resize "${sixel_size}" jpg:- 2>/dev/null | idump -f 2>/dev/null && return 0; } ||
 		{ [[ -z "$TERMUX_VERSION" ]] && [[ -z "$XTERM_VERSION" ]] && [[ -z "$PREVIEW_IMG" || "$PREVIEW_IMG" == 1 ]] && cmd_check magick imagemagick &&
-		magick -quiet "${file}" -auto-orient -resize "$sixel_size" -colors "$numcolors" sixel:- 2>/dev/null && return 0; } ||
+		magick -quiet -- "${file}" -auto-orient -resize "${sixel_size}" -colors "$numcolors" sixel:- 2>/dev/null && return 0; } ||
         { [[ -z "$TERMUX_VERSION" ]] && [[ -z "$XTERM_VERSION" ]] && [[ -z "$PREVIEW_IMG" || "$PREVIEW_IMG" == 1 ]] && cmd_check img2sixel libsixel &&
         img2sixel -w "${PREVIEW_SIXEL_W:-540}" -h "${PREVIEW_SIXEL_H:-420}" "${file}" 2>/dev/null && return 0; } ||
         { [[ -z "$PREVIEW_IMG" || "$PREVIEW_IMG" == 2 ]] && [[ -n "$TERMUX_VERSION" ]] &&
@@ -1334,6 +1338,8 @@ img2info() {
     temp_file="${TMP_DIR}/temp_file.jpg"
     [[ -f "$temp_file" ]] && rm -f "$temp_file"
 
+	{ [[ ${XDG_SESSION_TYPE,,} == tty ]] && cmd_check idump idump && cmd_check magick imagemagick &&
+	magick -quiet -- "${file}[0]" -auto-orient -resize "${RESOLUTION}!" jpg:- 2>/dev/null | idump -f 2>/dev/null && return 0; } ||
 	{ [[ -z "$TERMUX_VERSION" ]] && [[ -z "$XTERM_VERSION" ]] && [[ -z "$PREVIEW_IMG" || "$PREVIEW_IMG" == 1 ]] && cmd_check magick imagemagick &&
 	magick -quiet -- "${file}[0]" -auto-orient -resize "${RESOLUTION}!" -colors "$numcolors" sixel:- 2>/dev/null && return 0; } ||
     { cmd_check magick imagemagick && ls "${TMP_DIR}" && 
@@ -1398,6 +1404,8 @@ pdfview() {
     fmt -w "${width}" | head -n "${sizeline}" && return 0; } ||
     { cmd_check mutool mupdf && mutool draw -F txt -i -- "${file}" 1-10 | \
     fmt -w "${width}" | head -n "${sizeline}" && return 0; } ||
+	{ [[ ${XDG_SESSION_TYPE,,} == tty ]] && cmd_check idump idump && cmd_check magick imagemagick &&
+	magick -quiet -- "${file}[0]" -auto-orient -resize "${RESOLUTION}!" jpg:- 2>/dev/null | idump -f 2>/dev/null && return 0; } ||
 	{ [[ -z "$TERMUX_VERSION" ]] && [[ -z "$XTERM_VERSION" ]] && [[ -z "$PREVIEW_IMG" || "$PREVIEW_IMG" == 1 ]] && cmd_check magick imagemagick &&
 	magick -quiet -- "${file}[0]" -auto-orient -resize "${RESOLUTION}!" -colors "$numcolors" sixel:- 2>/dev/null && return 0; } ||
     { cmd_check magick imagemagick && 
