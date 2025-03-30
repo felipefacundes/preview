@@ -1,0 +1,11 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Type=Application
+Name=preview
+Comment=Launches the ranger preview manager
+Icon=utilities-terminal
+Terminal=true
+Exec=preview
+Categories=ConsoleOnly;System;FileTools;FileManager
+MimeType=inode/directory;
+Keywords=File;Manager;Browser;Explorer;Launcher;Vi;Vim;Bash;Shell
