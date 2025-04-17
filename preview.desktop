@@ -2,7 +2,7 @@
 [Desktop Entry]
 Type=Application
 Name=preview
-Comment=Launches the ranger preview manager
+Comment=Launches the preview file manager
 Icon=utilities-terminal
 Terminal=true
 Exec=preview
